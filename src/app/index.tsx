@@ -1,6 +1,5 @@
 import { router } from "expo-router"
 import { View } from "react-native"
-import { SafeAreaView } from "react-native-safe-area-context"
 
 import { Button } from "@/components/Button"
 import { HomeHeader } from "@/components/HomeHeader"
@@ -39,7 +38,7 @@ const targets = [
 
 export default function Index() {
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <View style={{ flex: 1 }}>
       <HomeHeader data={summary} />
 
       <List
@@ -56,12 +55,12 @@ export default function Index() {
         containerStyle={{ paddingHorizontal: 24 }}
       />
 
-      <View style={{ padding: 24, paddingBottom: 32 }}>
+      <View style={{ padding: 24, paddingBottom: 64 }}>
         <Button
           title="Nova meta"
           onPress={() => router.navigate("/target")}
         />
       </View>
-    </SafeAreaView>
+    </View>
   )
 }
