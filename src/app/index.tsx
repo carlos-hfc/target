@@ -1,23 +1,17 @@
-import { router } from "expo-router"
-import { Button, Text, View } from "react-native"
+import { View } from "react-native"
+
+import { HomeHeader } from "@/components/HomeHeader"
+
+const summary = {
+  total: "R$ 2680,00",
+  input: { label: "Entradas", value: "R$ 6800,00" },
+  output: { label: "Saídas", value: "-R$ 800,00" },
+}
 
 export default function Index() {
   return (
-    <View style={{ flex: 1, justifyContent: "center" }}>
-      <Text>Index</Text>
-
-      <Button
-        title="Target"
-        onPress={() => router.navigate("/target")}
-      />
-      <Button
-        title="Transaction"
-        onPress={() => router.navigate("/transaction/1")}
-      />
-      <Button
-        title="InProgress"
-        onPress={() => router.navigate("/in-progress/2")}
-      />
+    <View style={{ flex: 1 }}>
+      <HomeHeader data={summary} />
     </View>
   )
 }
