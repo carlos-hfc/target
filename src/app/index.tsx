@@ -1,5 +1,8 @@
+import { router } from "expo-router"
 import { View } from "react-native"
+import { SafeAreaView } from "react-native-safe-area-context"
 
+import { Button } from "@/components/Button"
 import { HomeHeader } from "@/components/HomeHeader"
 import { List } from "@/components/List"
 import { Target } from "@/components/Target"
@@ -36,17 +39,29 @@ const targets = [
 
 export default function Index() {
   return (
-    <View style={{ flex: 1 }}>
+    <SafeAreaView style={{ flex: 1 }}>
       <HomeHeader data={summary} />
 
       <List
         title="Metas"
         keyExtractor={item => item.id}
         data={targets}
-        renderItem={({ item }) => <Target data={item} />}
+        renderItem={({ item }) => (
+          <Target
+            data={item}
+            onPress={() => router.navigate(`/in-progress/${item.id}`)}
+          />
+        )}
         emptyMessage="Nenhuma meta. Toque em nova meta para criar."
         containerStyle={{ paddingHorizontal: 24 }}
       />
-    </View>
+
+      <View style={{ padding: 24, paddingBottom: 32 }}>
+        <Button
+          title="Nova meta"
+          onPress={() => router.navigate("/target")}
+        />
+      </View>
+    </SafeAreaView>
   )
 }
