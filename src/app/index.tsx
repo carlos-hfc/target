@@ -1,10 +1,14 @@
-import { router } from "expo-router"
-import { View } from "react-native"
+import { router, useFocusEffect } from "expo-router"
+import { useCallback, useState } from "react"
+import { Alert, View } from "react-native"
 
 import { Button } from "@/components/Button"
 import { HomeHeader } from "@/components/HomeHeader"
 import { List } from "@/components/List"
-import { Target } from "@/components/Target"
+import { Loading } from "@/components/Loading"
+import { Target, TargetProps } from "@/components/Target"
+import { useTargetDatabase } from "@/database/use-target-database"
+import { formatCurrency } from "@/utils/format-currency"
 
 const summary = {
   total: "R$ 2680,00",
@@ -12,31 +16,50 @@ const summary = {
   output: { label: "Saídas", value: "-R$ 800,00" },
 }
 
-const targets = [
-  {
-    id: "1",
-    name: "Cadeira ergonômica",
-    percentage: "75%",
-    current: "R$ 900,00",
-    target: "R$ 1200,00",
-  },
-  {
-    id: "2",
-    name: "Apple Watch",
-    percentage: "50%",
-    current: "R$ 580,00",
-    target: "R$ 1790,00",
-  },
-  {
-    id: "3",
-    name: "Viagem para RJ",
-    percentage: "50%",
-    current: "R$ 1200,00",
-    target: "R$ 3000,00",
-  },
-]
-
 export default function Index() {
+  const [targets, setTargets] = useState<TargetProps[]>([])
+  const [isFetching, setIsFetching] = useState(true)
+
+  const targetDb = useTargetDatabase()
+
+  async function fetchTargets() {
+    try {
+      const response = await targetDb.listBySavedValue()
+
+      return response.map(item => ({
+        ...item,
+        id: String(item.id),
+        percentage: item.percentage.toLocaleString("pt-br", {
+          style: "percent",
+          maximumFractionDigits: 0,
+        }),
+        current: formatCurrency(item.current),
+        target: formatCurrency(item.amount),
+      }))
+    } catch (error) {
+      Alert.alert("Erro", "Não foi possível carregar as metas")
+      console.log(error)
+      return []
+    }
+  }
+
+  async function fetchData() {
+    const targetData = fetchTargets()
+
+    const [target] = await Promise.all([targetData])
+
+    setTargets(target)
+    setIsFetching(false)
+  }
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchData()
+    }, []),
+  )
+
+  if (isFetching) return <Loading />
+
   return (
     <View style={{ flex: 1 }}>
       <HomeHeader data={summary} />
