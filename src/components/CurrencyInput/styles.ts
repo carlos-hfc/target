@@ -8,7 +8,7 @@ export const styles = StyleSheet.create({
     gap: 10,
   },
   label: {
-    color: colors.gray[500],
+    color: colors.gray[600],
     fontSize: 12,
     fontFamily: fontFamily.medium,
   },

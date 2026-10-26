@@ -1,5 +1,5 @@
 import { MaterialIcons } from "@expo/vector-icons"
-import { ColorValue, Text, View } from "react-native"
+import { NativeColorValue, Text, View } from "react-native"
 
 import { styles } from "./styles"
 
@@ -12,15 +12,15 @@ interface Props {
   data: SummaryProps
   icon: {
     name: keyof typeof MaterialIcons.glyphMap
-    color: ColorValue
+    color: NativeColorValue | string
   }
-  isLeft?: boolean
+  isRight?: boolean
 }
 
-export function Summary({ data, icon, isLeft = false }: Props) {
+export function Summary({ data, icon, isRight = false }: Props) {
   return (
     <View style={styles.container}>
-      <View style={[styles.header, isLeft && { justifyContent: "flex-end" }]}>
+      <View style={[styles.header, isRight && { justifyContent: "flex-end" }]}>
         <MaterialIcons
           name={icon.name}
           size={16}
