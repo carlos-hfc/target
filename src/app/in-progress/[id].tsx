@@ -67,6 +67,7 @@ export default function InProgress() {
   useFocusEffect(
     useCallback(() => {
       fetchDetails()
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []),
   )
 
@@ -78,7 +79,7 @@ export default function InProgress() {
         title={details.name}
         rightButton={{
           icon: "edit",
-          onPress() {},
+          onPress: () => router.navigate(`/target?id=${params.id}`),
         }}
       />
 

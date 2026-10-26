@@ -15,6 +15,10 @@ export interface TargetResponse {
   updated_at: Date
 }
 
+export interface TargetUpdate extends TargetCreate {
+  id: number
+}
+
 export function useTargetDatabase() {
   const database = useSQLiteContext()
 
@@ -62,9 +66,26 @@ export function useTargetDatabase() {
       `)
   }
 
+  async function update(data: TargetUpdate) {
+    const statement = await database.prepareAsync(/* SQL */ `
+        UPDATE targets SET
+          name = $name,
+          amount = $amount,
+          updated_at = CURRENT_TIMESTAMP
+        WHERE id = $id
+      `)
+
+    statement.executeAsync({
+      $id: data.id,
+      $amount: data.amount,
+      $name: data.name,
+    })
+  }
+
   return {
     create,
     listBySavedValue,
     show,
+    update,
   }
 }

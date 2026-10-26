@@ -1,5 +1,5 @@
 import { router, useLocalSearchParams } from "expo-router"
-import { useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import {
   Alert,
   Keyboard,
@@ -34,8 +34,30 @@ export default function Target() {
     setIsProcessing(true)
 
     if (params.id) {
+      update()
     } else {
       create()
+    }
+  }
+
+  async function update() {
+    try {
+      await targetDb.update({
+        id: Number(params.id),
+        name,
+        amount,
+      })
+
+      Alert.alert("Sucesso", "Meta atualizada com sucesso!", [
+        {
+          text: "OK",
+          onPress: () => router.back(),
+        },
+      ])
+    } catch (error) {
+      Alert.alert("Erro", "Não foi possível atualizar a meta")
+    } finally {
+      setIsProcessing(false)
     }
   }
 
@@ -56,6 +78,26 @@ export default function Target() {
       setIsProcessing(false)
     }
   }
+
+  const fetchDetails = useCallback(async (id: number) => {
+    try {
+      const response = await targetDb.show(id)
+
+      setName(response?.name ?? "")
+      setAmount(response?.amount ?? 0)
+    } catch (error) {
+      Alert.alert("Erro", "Não foi possível carregar os detalhes da meta")
+    } finally {
+      setIsProcessing(false)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  useEffect(() => {
+    if (params.id) {
+      fetchDetails(Number(params.id))
+    }
+  }, [fetchDetails, params.id])
 
   return (
     <KeyboardAvoidingView
