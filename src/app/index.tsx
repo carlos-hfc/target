@@ -29,7 +29,7 @@ export default function Index() {
       return response.map(item => ({
         ...item,
         id: String(item.id),
-        percentage: item.percentage.toLocaleString("pt-br", {
+        percentage: (item.percentage / 100).toLocaleString("pt-br", {
           style: "percent",
           maximumFractionDigits: 0,
         }),
@@ -55,6 +55,7 @@ export default function Index() {
   useFocusEffect(
     useCallback(() => {
       fetchData()
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []),
   )
 
@@ -66,7 +67,6 @@ export default function Index() {
 
       <List
         title="Metas"
-        keyExtractor={item => item.id}
         data={targets}
         renderItem={({ item }) => (
           <Target
