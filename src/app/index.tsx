@@ -8,23 +8,24 @@ import { List } from "@/components/List"
 import { Loading } from "@/components/Loading"
 import { Target, TargetProps } from "@/components/Target"
 import { useTargetDatabase } from "@/database/use-target-database"
+import { useTransactionDatabase } from "@/database/use-transaction-database"
 import { formatCurrency } from "@/utils/format-currency"
-
-const summary = {
-  total: "R$ 2680,00",
-  input: { label: "Entradas", value: "R$ 6800,00" },
-  output: { label: "Saídas", value: "-R$ 800,00" },
-}
 
 export default function Index() {
   const [targets, setTargets] = useState<TargetProps[]>([])
   const [isFetching, setIsFetching] = useState(true)
+  const [summary, setSummary] = useState({
+    total: "",
+    input: { label: "Entradas", value: "" },
+    output: { label: "Saídas", value: "" },
+  })
 
   const targetDb = useTargetDatabase()
+  const transactionDb = useTransactionDatabase()
 
   async function fetchTargets() {
     try {
-      const response = await targetDb.listBySavedValue()
+      const response = await targetDb.listByClosestTarget()
 
       return response.map(item => ({
         ...item,
@@ -43,12 +44,39 @@ export default function Index() {
     }
   }
 
+  async function fetchSummary() {
+    try {
+      const response = await transactionDb.summary()
+
+      return {
+        total: formatCurrency((response?.input ?? 0) + (response?.output ?? 0)),
+        input: formatCurrency(response?.input ?? 0),
+        output: formatCurrency(response?.output ?? 0),
+      }
+    } catch (error) {
+      Alert.alert("Erro", "Não foi possível carregar o resumo")
+      console.log(error)
+    }
+  }
+
   async function fetchData() {
     const targetData = fetchTargets()
+    const summaryData = fetchSummary()
 
-    const [target] = await Promise.all([targetData])
+    const [target, summary] = await Promise.all([targetData, summaryData])
 
     setTargets(target)
+    setSummary({
+      total: summary?.total ?? "",
+      input: {
+        label: "Entradas",
+        value: summary?.input ?? "",
+      },
+      output: {
+        label: "Entradas",
+        value: summary?.output ?? "",
+      },
+    })
     setIsFetching(false)
   }
 
