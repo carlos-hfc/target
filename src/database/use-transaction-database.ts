@@ -39,8 +39,13 @@ export function useTransactionDatabase() {
       `)
   }
 
+  async function remove(id: number) {
+    database.runAsync(/* SQL */ `DELETE FROM transactions WHERE id = ?`, id)
+  }
+
   return {
     create,
     listByTargetId,
+    remove,
   }
 }
